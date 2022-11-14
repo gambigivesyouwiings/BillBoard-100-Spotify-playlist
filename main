@@ -1,0 +1,59 @@
+from bs4 import BeautifulSoup
+import requests
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from pprint import pprint
+
+
+scope = "playlist-modify-public"
+client_secret = XXXX(from your spotify web app)
+client_id = XXXX(from your spotify web app)
+
+def make_playlist(title, user_id, song_list):
+    # title: The title for the playlist
+    # user_id: The id of the spotify user
+    # song_list: A list of track URI's or track IDs of the songs to be added.
+
+    new_playlist = sp.user_playlist_create(name=title, user=user_id)
+    new_playlist_id = new_playlist['id']
+
+    my_playlist = sp.playlist_add_items(playlist_id=new_playlist_id, items=song_list)
+    print(my_playlist)
+    pprint(f"Your playlist: {title} has been created successfully!")
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=client_id,
+                                               client_secret=client_secret,
+                                               redirect_uri='https://example.com', state=None, scope=scope,
+                                               cache_path='token.txt', username=None, proxies=None, show_dialog=True,
+                                               requests_session=True,
+                                               requests_timeout=None))
+
+me = sp.current_user()
+my_id = me['id']
+
+date = input("What date do you want to go back to? Input in YYYY-MM-DD format.\n")
+
+response = requests.get(f"https://www.billboard.com/charts/hot-100/{date}")
+playlist = response.text
+
+soup = BeautifulSoup(playlist, "html.parser")
+top_songs_tags = soup.select(selector="div li ul li h3")
+
+print(billboard_100)
+
+
+billboard_ids = []
+for item in billboard_100:
+    song = sp.search(q=f"track:{item} ", limit=5, type='track')
+    try:
+        song_id = song['tracks']['items'][0]['id']
+    except IndexError:
+        print(f"OOPS! The track {item} cannot be found")
+        no_song.append(item)
+    else:
+        billboard_ids.append(song_id)
+print(billboard_ids)
+print(len(billboard_ids))
+
+make_playlist(title=default, user_id=my_id, song_list=billboard_ids)
+
